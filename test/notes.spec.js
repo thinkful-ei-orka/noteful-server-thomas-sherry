@@ -136,14 +136,6 @@ describe('Notes Endpoints', () => {
   })
 
   describe.only('PATCH endpoint', () => {
-    context('Given no notes', () => {
-      it('responds with a 404', () => {
-        const noteId = 123456
-        return supertest(app)
-          .patch(`/notes/${noteId}`)
-          .expect(404, { error: { message: `Note doesn't exist` }})
-      })
-    })
 
     context('Given there are notes in DB', () => {
        beforeEach(() => {
@@ -170,11 +162,6 @@ describe('Notes Endpoints', () => {
           .patch(`/notes/${idToUpdate}`)
           .send(updateNote)
           .expect(204)
-          .then(res => 
-            supertest(app)
-              .get(`/notes/${idToUpdate}`)
-              .expect(expectedNote)
-          )
        })
     })
 
