@@ -1,8 +1,10 @@
-const app = require('../src/app')
-const FoldersService = require('../src/folders/folders-service')
-const { expect } = require('chai')
-const { TEST_DB_URL } = require('../src/config')
+require('dotenv').config();
+const app = require('../src/app');
+const FoldersService = require('../src/folders/folders-service');
+const { expect } = require('chai');
+const { TEST_DB_URL } = require('../src/config');
 const knex = require('knex');
+const supertest = require('supertest');
 
 describe('Folders Endpoints', () => {
   let db;
