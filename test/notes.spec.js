@@ -1,0 +1,98 @@
+require('dotenv').config();
+const app = require('../src/app');
+const FoldersService = require('../src/folders/folders-service');
+const { expect } = require('chai');
+const { TEST_DB_URL } = require('../src/config');
+const knex = require('knex');
+const supertest = require('supertest');
+
+describe('Notes Endpoints', () => {
+  let db;
+
+  before(() => {
+    db = knex({
+      client: 'pg',
+      connection: process.env.TEST_DB_URL
+    });
+    app.set('db', db)
+  })
+
+  before(() => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
+  afterEach(() => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
+  after(() => db.destroy());
+
+  const testFolders = [
+    {
+      "id": 1,
+      "folder_name": "Important"
+    },
+    {
+      "id": 2,
+      "folder_name": "Super"
+    },
+    {
+      "id": 3,
+      "folder_name": "Spangley"
+    }
+  ]
+
+  const testNotes = [
+    {
+      "id": 1,
+      "note_name": "Dogs",
+      "date_modified": "2019-01-03T00:00:00.000Z",
+      "folder_id": 1,
+      "content": "Corporis accusamus placeat quas non voluptas. Harum fugit molestias qui. Velit ex animi reiciendis quasi. Suscipit totam delectus ut voluptas aut qui rerum. Non veniam eius molestiae rerum quam.\n \rUnde qui aperiam praesentium alias. Aut temporibus id quidem recusandae voluptatem ut eum. Consequatur asperiores et in quisquam corporis maxime dolorem soluta. Et officiis id est quia sunt qui iste reiciendis saepe. Ut aut doloribus minus non nisi vel corporis. Veritatis mollitia et molestias voluptas neque aspernatur reprehenderit.\n \rMaxime aut reprehenderit mollitia quia eos sit fugiat exercitationem. Minima dolore soluta. Quidem fuga ut sit voluptas nihil sunt aliquam dignissimos. Ex autem nemo quisquam voluptas consequuntur et necessitatibus minima velit. Consequatur quia quis tempora minima. Aut qui dolor et dignissimos ut repellat quas ad."
+    },
+    {
+      "id": 2,
+      "note_name": "Cats",
+      "date_modified": "2018-08-15T23:00:00.000Z",
+      "folder_id": 2,
+      "content": "Eos laudantium quia ab blanditiis temporibus necessitatibus. Culpa et voluptas ut sed commodi. Est qui ducimus id. Beatae sint aspernatur error ullam quae illum sint eum. Voluptas corrupti praesentium soluta cumque illo impedit vero omnis nisi.\n \rNam sunt reprehenderit soluta quis explicabo impedit id. Repudiandae eligendi libero ad ut dolores. Laborum nihil sint et labore iusto reiciendis cum. Repellat quos recusandae natus nobis ullam autem veniam id.\n \rEsse blanditiis neque tempore ex voluptate commodi nemo. Velit sapiente at placeat eveniet ut rem. Quidem harum ut dignissimos. Omnis pariatur quas aperiam. Quasi voluptas qui nulla. Iure quas veniam aut quia et."
+    },
+    {
+      "id": 3,
+      "note_name": "Pigs",
+      "date_modified": "2018-03-01T00:00:00.000Z",
+      "folder_id": 3,
+      "content": "Occaecati dignissimos quam qui facere deserunt quia. Quaerat aut eos laudantium dolor odio officiis illum. Velit vel qui dolorem et.\n \rQui ut vel excepturi in at. Ut accusamus cumque quia sapiente ut ipsa nesciunt. Dolorum quod eligendi qui aliquid sint.\n \rAt id deserunt voluptatem et rerum. Voluptatem fuga tempora aut dignissimos est odio maiores illo. Fugiat in ad expedita voluptas voluptatum nihil."
+    },
+    {
+      "id": 4,
+      "note_name": "Birds",
+      "date_modified": "2019-01-04T00:00:00.000Z",
+      "folder_id": 1,
+      "content": "Eum culpa odit. Veniam porro molestiae dolores sunt reiciendis culpa. Atque accusamus dolore eos odio facilis. Dolores reprehenderit et provident dolores possimus mollitia.\n \rAdipisci dolor necessitatibus nihil quod quia vel veniam. Placeat qui vero. Cum cum amet at nisi. Distinctio rerum similique explicabo atque ratione. Recusandae omnis earum est. Quas iusto nihil itaque architecto ea.\n \rPerferendis neque doloremque quibusdam accusantium ut dolor illum dolorum. Vero et similique nihil beatae. In repellendus dolores praesentium. Optio alias rerum culpa placeat maiores natus sed. Ipsa et qui cum ex maiores."
+    },
+  ]
+
+  describe.only('GET /notes', () => {
+    context('Given noteful has no notes data', () => {
+      it('GET /notes responds with 200 containing an empty array', () => {
+        return supertest(app)
+          .get('/notes')
+          .expect(200, [])
+      })
+    })
+    
+    context('Given noteful has notes data', () => {
+      beforeEach(() => {
+        return db
+          .into('folders')
+          .insert(testFolders)
+          .then(() => {
+            return db.into('notes')
+              .insert(testNotes)
+          })
+      })
+      it('GET /notes responds with 200 containing all notes', () => {
+        return supertest(app)
+          .get('/notes')
+          .expect(200, testNotes)
+      })
+    })
+  
+  })
+
+})
