@@ -135,7 +135,7 @@ describe('Notes Endpoints', () => {
     })
   })
 
-  describe.only('PATCH endpoint', () => {
+  describe('PATCH endpoint', () => {
 
     context('Given there are notes in DB', () => {
        beforeEach(() => {
@@ -165,6 +165,33 @@ describe('Notes Endpoints', () => {
        })
     })
 
+  })
+
+  describe('DELETE /notes/:id', () => {
+     context('Given that notes exist', () => {
+       beforeEach(() => {
+         return db
+          .into('folders')
+          .insert(testFolders)
+          .then(
+            db.into('notes')
+              .insert(testNotes)
+          )
+       })
+
+       it('responds with 204 and removes note', () => {
+         const idToRemove = 1
+         const expectedNotes = testNotes.filter(note => note.id !== idToRemove)
+         return supertest(app)
+          .delete(`/notes/${idToRemove}`)
+          .expect(204)
+          .then(res => {
+            supertest(app)
+              .get('/notes')
+              .expect(expectedNotes)
+          })
+       })
+     })
   })
 
 })
