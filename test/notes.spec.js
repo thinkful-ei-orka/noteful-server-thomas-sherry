@@ -135,4 +135,49 @@ describe('Notes Endpoints', () => {
     })
   })
 
+  describe.only('PATCH endpoint', () => {
+    context('Given no notes', () => {
+      it('responds with a 404', () => {
+        const noteId = 123456
+        return supertest(app)
+          .patch(`/notes/${noteId}`)
+          .expect(404, { error: { message: `Note doesn't exist` }})
+      })
+    })
+
+    context('Given there are notes in DB', () => {
+       beforeEach(() => {
+         return db
+          .into('folders')
+          .insert(testFolders)
+          .then(() => {
+            db.into('notes')
+              .insert(testNotes)
+          })
+       })
+
+       it('responds with 204 and updates bookmark', () => {
+        const idToUpdate = 1
+        const updateNote = {
+          note_name: 'New Name!',
+          content: 'New content!'
+        }
+        const expectedNote = {
+          ...testNotes[idToUpdate - 1],
+          ...updateNote
+        }
+        return supertest(app)
+          .patch(`/notes/${idToUpdate}`)
+          .send(updateNote)
+          .expect(204)
+          .then(res => 
+            supertest(app)
+              .get(`/notes/${idToUpdate}`)
+              .expect(expectedNote)
+          )
+       })
+    })
+
+  })
+
 })
