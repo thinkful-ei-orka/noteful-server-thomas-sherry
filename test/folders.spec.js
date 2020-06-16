@@ -17,8 +17,8 @@ describe('Folders Endpoints', () => {
     app.set('db', db)
   })
  
-  before(() => db('folders').truncate());
-  afterEach(() => db('folders').truncate());
+  before( () => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
+  afterEach(() => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
   after(() => db.destroy());
  
   it('GET /folders responds with 200 containing an empty array', () => {
@@ -30,24 +30,29 @@ describe('Folders Endpoints', () => {
   context('Given noteful has data', () => {
     const testFolders = [
       {
-        "id": "1",
-        "name": "Important"
+        "id": 1,
+        "folder_name": "Important"
       },
       {
-        "id": "2",
-        "name": "Super"
+        "id": 2,
+        "folder_name": "Super"
       },
       {
-        "id": "3",
-        "name": "Spangley"
+        "id": 3,
+        "folder_name": "Spangley"
       }
     ]
 
+    beforeEach(() => {
+      return db 
+        .into('folders')
+        .insert(testFolders)
+    })
+
     it('GET should respond with 200 and all the folders', () => {
-      return FoldersService.getAllFolders(db)
-        .then(actual => {
-          expect(actual).to.eql(testFolders);
-        })
+      return supertest(app)
+        .get('/folders')
+        .expect(200, testFolders);
     })
   })
 })
