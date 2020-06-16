@@ -1,5 +1,6 @@
 const express = require('express');
 const foldersService = require('./folders-service');
+const notesService = require('../notes/notes-service');
 
 const foldersRouter = express.Router()
 const jsonParser = express.json()
@@ -31,7 +32,7 @@ foldersRouter
       .then(folder => {
         res
           .status(201)
-          .json(folder)
+          .send(folder)
       })
       .catch(next)
   })
@@ -43,8 +44,11 @@ foldersRouter
     const knexInstance = req.app.get('db')
     foldersService.getById(knexInstance, id)
       .then(folder => {
-        res.status(200)
-          .send(folder)
+        notesService.getByFolderId(knexInstance, folder.id)
+        .then(notes => {
+          res.status(200)
+          .send(notes)  
+        })
       })
 
   })
