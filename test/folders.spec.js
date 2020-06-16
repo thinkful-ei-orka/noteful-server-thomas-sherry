@@ -38,9 +38,9 @@ describe('Folders Endpoints', () => {
  
   describe('GET Endpoint', () => {
     context('Givent Noteful has no folder data', () => {
-      it('GET /folders responds with 200 containing an empty array', () => {
+      it('GET /api/folders responds with 200 containing an empty array', () => {
         return supertest(app)
-          .get('/folders')
+          .get('/api/folders')
           .expect(200, [])
       })
   
@@ -57,7 +57,7 @@ describe('Folders Endpoints', () => {
   
       it('GET should respond with 200 and all the folders', () => {
         return supertest(app)
-          .get('/folders')
+          .get('/api/folders')
           .expect(200, testFolders);
       })
 
@@ -66,7 +66,7 @@ describe('Folders Endpoints', () => {
         const testFolder = testFolders[idToGet - 1];
 
         return supertest(app)
-          .get(`/folders/${idToGet}`)
+          .get(`/api/folders/${idToGet}`)
           .expect(200, testFolder)
       })
     })
@@ -83,7 +83,7 @@ describe('Folders Endpoints', () => {
         }
 
         return supertest(app)
-          .post('/folders')
+          .post('/api/folders')
           .send(newFolder)
           .expect(201)
       })
@@ -105,7 +105,7 @@ describe('Folders Endpoints', () => {
         const expectedFolders = testFolders.filter(folder => folder.id != idToDelete)
 
         return supertest(app)
-          .delete(`/folders/${idToDelete}`)
+          .delete(`/api/folders/${idToDelete}`)
           .expect(204)
           .then(() => FoldersService.getAllFolders(db))
           .then(allFolders => {

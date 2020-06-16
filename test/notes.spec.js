@@ -67,11 +67,11 @@ describe('Notes Endpoints', () => {
     },
   ]
 
-  describe('GET /notes', () => {
+  describe('GET /api/notes', () => {
     context('Given noteful has no notes data', () => {
-      it('GET /notes responds with 200 containing an empty array', () => {
+      it('GET /api/notes responds with 200 containing an empty array', () => {
         return supertest(app)
-          .get('/notes')
+          .get('/api/notes')
           .expect(200, [])
       })
     })
@@ -87,9 +87,9 @@ describe('Notes Endpoints', () => {
           })
       })
 
-      it('GET /notes responds with 200 containing all notes', () => {
+      it('GET /api/notes responds with 200 containing all notes', () => {
         return supertest(app)
-          .get('/notes')
+          .get('/api/notes')
           .expect(200, testNotes)
       })
 
@@ -98,7 +98,7 @@ describe('Notes Endpoints', () => {
         const testNote = testNotes[idToGet - 1];
 
         return supertest(app)
-          .get(`/notes/${idToGet}`)
+          .get(`/api/notes/${idToGet}`)
           .expect(200, testNote)
       })
     })
@@ -127,7 +127,7 @@ describe('Notes Endpoints', () => {
         }
 
         return supertest(app)
-          .post('/notes')
+          .post('/api/notes')
           .send(newNote)
           .expect(201)
       })
@@ -159,7 +159,7 @@ describe('Notes Endpoints', () => {
           ...updateNote
         }
         return supertest(app)
-          .patch(`/notes/${idToUpdate}`)
+          .patch(`/api/notes/${idToUpdate}`)
           .send(updateNote)
           .expect(204)
        })
@@ -167,7 +167,7 @@ describe('Notes Endpoints', () => {
 
   })
 
-  describe('DELETE /notes/:id', () => {
+  describe('DELETE /api/notes/:id', () => {
      context('Given that notes exist', () => {
        beforeEach(() => {
          return db
@@ -183,11 +183,11 @@ describe('Notes Endpoints', () => {
          const idToRemove = 1
          const expectedNotes = testNotes.filter(note => note.id !== idToRemove)
          return supertest(app)
-          .delete(`/notes/${idToRemove}`)
+          .delete(`/api/notes/${idToRemove}`)
           .expect(204)
           .then(res => {
             supertest(app)
-              .get('/notes')
+              .get('/api/notes')
               .expect(expectedNotes)
           })
        })
