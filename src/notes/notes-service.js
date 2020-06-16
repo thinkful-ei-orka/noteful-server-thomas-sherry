@@ -9,7 +9,17 @@ const NotesService = {
       .where({ id })
       .first()
   },
-  
+
+  createNote(knex, newNote) {
+    return knex
+      .insert(newNote)
+      .into('notes')
+      .returning('*')
+      .then(rows => {
+        return rows[0]
+      })
+  },
+
 }
 
 module.exports = NotesService

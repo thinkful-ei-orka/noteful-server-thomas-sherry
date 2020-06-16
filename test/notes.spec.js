@@ -67,7 +67,7 @@ describe('Notes Endpoints', () => {
     },
   ]
 
-  describe.only('GET /notes', () => {
+  describe('GET /notes', () => {
     context('Given noteful has no notes data', () => {
       it('GET /notes responds with 200 containing an empty array', () => {
         return supertest(app)
@@ -103,6 +103,36 @@ describe('Notes Endpoints', () => {
       })
     })
   
+  })
+
+  describe('POST endpoints', () => {
+    context('Given noteful has no notes in any folder', () => {
+      const testFolder = [
+        {
+          "id": 1,
+          "folder_name": "Important"
+        }
+      ]
+
+      beforeEach(() => {
+        return db.into('folders').insert(testFolder)
+      })
+
+      it('Creates a new note', () => {
+        const newNote = {
+          note_name: 'notename',
+          content: 'content',
+          folder_id: 1,
+          date_modified: '2019-01-04T00:00:00.000Z'
+        }
+
+        return supertest(app)
+          .post('/notes')
+          .send(newNote)
+          .expect(201)
+      })
+
+    })
   })
 
 })

@@ -14,6 +14,31 @@ notesRouter
       })
       .catch(next)
   })
+  .post(jsonParser, (req, res, next) => {
+    const { note_name, content, date_modified, folder_id } = req.body
+    const newNote = { note_name, content, date_modified, folder_id }
+
+    for (const [key, value] of Object.entries(newNote)) {
+      if (!value) {
+        return res
+          .status(400)
+          .json({
+            error: { message: `${key} is required`}
+          });
+      }
+    }
+
+    const knexInstance = req.app.get('db')
+    NotesService.createNote(knexInstance, newNote)
+      .then(note => {
+          res
+            .status(201)
+            .json(note)
+      })
+      .catch(next)
+
+
+  })
 
 notesRouter
   .route('/:id')
@@ -25,6 +50,7 @@ notesRouter
         res.status(200)
           .send(note)
       })
+      .catch(next)
   })
 
 module.exports = notesRouter
