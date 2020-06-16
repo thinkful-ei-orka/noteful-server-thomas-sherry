@@ -60,6 +60,15 @@ describe('Folders Endpoints', () => {
           .get('/folders')
           .expect(200, testFolders);
       })
+
+      it('GET should respond with a single folder when requesting specific Id', () => {
+        const idToGet = 1;
+        const testFolder = testFolders[idToGet - 1];
+
+        return supertest(app)
+          .get(`/folders/${idToGet}`)
+          .expect(200, testFolder)
+      })
     })
 
    

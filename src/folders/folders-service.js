@@ -2,6 +2,12 @@ const FoldersService = {
   getAllFolders(knex) {
     return knex.select('*').from('folders')
   },
+  getById(knex, id) {
+    return knex('folders')
+      .select('*')
+      .where({id})
+      .first()
+  },
   createFolder(knex, folder) {
     return knex
       .insert(folder)

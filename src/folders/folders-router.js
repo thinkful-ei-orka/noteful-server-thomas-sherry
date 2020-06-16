@@ -38,16 +38,27 @@ foldersRouter
 
 foldersRouter
   .route('/:id')
+  .get(jsonParser, (req, res, next) => {
+    const { id } = req.params;
+    const knexInstance = req.app.get('db')
+    foldersService.getById(knexInstance, id)
+      .then(folder => {
+        res.status(200)
+          .send(folder)
+      })
+
+  })
+
   .delete(jsonParser, (req, res, next) => {
     const { id } = req.params;
     const knexInstance = req.app.get('db')
     foldersService.deleteFolder(knexInstance, id)
       .then(folders => {
         res.status(204)
-        .end();
+          .end();
       })
       .catch(next)
-    
+
   })
 
 module.exports = foldersRouter
