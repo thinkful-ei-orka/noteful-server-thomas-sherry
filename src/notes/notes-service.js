@@ -11,9 +11,10 @@ const NotesService = {
   },
 
   getByFolderId(knex, id) {
-    return knex('notes')
+    return knex
+      .from('notes')
       .select('*')
-      .where({folder_id: id})
+      .where('folder_id', id)
   },
 
   createNote(knex, newNote) {

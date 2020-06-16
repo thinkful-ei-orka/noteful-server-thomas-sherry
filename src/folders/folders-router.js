@@ -47,7 +47,7 @@ foldersRouter
         notesService.getByFolderId(knexInstance, folder.id)
         .then(notes => {
           res.status(200)
-          .send(notes)  
+          .returning(notes)  
         })
       })
 
