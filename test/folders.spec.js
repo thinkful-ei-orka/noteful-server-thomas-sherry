@@ -2,7 +2,7 @@ require('dotenv').config();
 const app = require('../src/app');
 const FoldersService = require('../src/folders/folders-service');
 const { expect } = require('chai');
-const { TEST_DB_URL } = require('../src/config');
+const { TEST_DATABASE_URL } = require('../src/config');
 const knex = require('knex');
 const supertest = require('supertest');
 
@@ -12,7 +12,7 @@ describe('Folders Endpoints', () => {
   before(() => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: process.env.TEST_DATABASE_URL,
     })
     app.set('db', db)
   })
