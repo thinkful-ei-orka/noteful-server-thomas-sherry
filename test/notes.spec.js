@@ -86,10 +86,20 @@ describe('Notes Endpoints', () => {
               .insert(testNotes)
           })
       })
+
       it('GET /notes responds with 200 containing all notes', () => {
         return supertest(app)
           .get('/notes')
           .expect(200, testNotes)
+      })
+
+      it('GET /:id returns a specified note', () => {
+        const idToGet = 1;
+        const testNote = testNotes[idToGet - 1];
+
+        return supertest(app)
+          .get(`/notes/${idToGet}`)
+          .expect(200, testNote)
       })
     })
   
