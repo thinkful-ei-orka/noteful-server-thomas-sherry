@@ -20,6 +20,21 @@ describe('Folders Endpoints', () => {
   before( () => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
   afterEach(() => db.raw("TRUNCATE TABLE folders, notes CASCADE"));
   after(() => db.destroy());
+
+  const testFolders = [
+    {
+      "id": 1,
+      "folder_name": "Important"
+    },
+    {
+      "id": 2,
+      "folder_name": "Super"
+    },
+    {
+      "id": 3,
+      "folder_name": "Spangley"
+    }
+  ]
  
   describe('GET Endpoint', () => {
     context('Givent Noteful has no folder data', () => {
@@ -33,20 +48,6 @@ describe('Folders Endpoints', () => {
     })
     
     context('Given noteful has data', () => {
-      const testFolders = [
-        {
-          "id": 1,
-          "folder_name": "Important"
-        },
-        {
-          "id": 2,
-          "folder_name": "Super"
-        },
-        {
-          "id": 3,
-          "folder_name": "Spangley"
-        }
-      ]
   
       beforeEach(() => {
         return db 
@@ -79,6 +80,30 @@ describe('Folders Endpoints', () => {
       })
     })
 
+  })
+
+  describe('DELETE endpoint', () => {
+    context('given Noteful has folder data', () => {
+        
+      beforeEach(() => {
+        return db 
+          .into('folders')
+          .insert(testFolders)
+      })
+  
+      it('deletes a folder, returning with 204', () => {
+        const idToDelete = 1;
+        const expectedFolders = testFolders.filter(folder => folder.id != idToDelete)
+
+        return supertest(app)
+          .delete(`/folders/${idToDelete}`)
+          .expect(204)
+          .then(() => FoldersService.getAllFolders(db))
+          .then(allFolders => {
+            expect(allFolders).to.eql(expectedFolders)
+          })
+      })
+    })
   })
 
   

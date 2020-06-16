@@ -36,4 +36,18 @@ foldersRouter
       .catch(next)
   })
 
+foldersRouter
+  .route('/:id')
+  .delete(jsonParser, (req, res, next) => {
+    const { id } = req.params;
+    const knexInstance = req.app.get('db')
+    foldersService.deleteFolder(knexInstance, id)
+      .then(folders => {
+        res.status(204)
+        .end();
+      })
+      .catch(next)
+    
+  })
+
 module.exports = foldersRouter
